@@ -10,4 +10,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IDC.Domain\IDC.Domain.csproj" />
+    <ProjectReference Include="..\IDC.Infrastructure\IDC.Infrastructure.csproj" />
+    <ProjectReference Include="..\IDC.Service\IDC.Application.csproj" />
+    <ProjectReference Include="..\IDC.Shared\IDC.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

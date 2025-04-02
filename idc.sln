@@ -12,6 +12,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDC.Application", "src\IDC.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A99841E9-EC25-4704-B76D-EE61FFBB3B9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDC.Shared", "src\IDC.Shared\IDC.Shared.csproj", "{4A7A7848-C69D-49D6-85DA-B32A03769C25}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{3E700E42-89BD-4FA2-8F35-43BC5E0985E6}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.override.yml = docker-compose.override.yml
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +42,10 @@ Global
 		{D28C015C-938F-42CD-A6F7-679D3A5C2DA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D28C015C-938F-42CD-A6F7-679D3A5C2DA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D28C015C-938F-42CD-A6F7-679D3A5C2DA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A7A7848-C69D-49D6-85DA-B32A03769C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A7A7848-C69D-49D6-85DA-B32A03769C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A7A7848-C69D-49D6-85DA-B32A03769C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A7A7848-C69D-49D6-85DA-B32A03769C25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,5 +55,6 @@ Global
 		{BF2147A1-E8FF-435A-8712-9C12404CEBB0} = {A99841E9-EC25-4704-B76D-EE61FFBB3B9D}
 		{6086F430-6D4F-4AF0-8D11-E8E71DDFB752} = {A99841E9-EC25-4704-B76D-EE61FFBB3B9D}
 		{D28C015C-938F-42CD-A6F7-679D3A5C2DA2} = {A99841E9-EC25-4704-B76D-EE61FFBB3B9D}
+		{4A7A7848-C69D-49D6-85DA-B32A03769C25} = {A99841E9-EC25-4704-B76D-EE61FFBB3B9D}
 	EndGlobalSection
 EndGlobal
