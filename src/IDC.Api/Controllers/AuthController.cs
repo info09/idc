@@ -59,7 +59,7 @@ namespace IDC.Api.Controllers
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             user!.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(30);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
 
             await _userManager.UpdateAsync(user);
 

@@ -27,6 +27,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\IDC.Domain\IDC.Domain.csproj" />
+	  <ProjectReference Include="..\IDC.Shared\IDC.Shared.csproj" />
 	</ItemGroup>
 
 </Project>
