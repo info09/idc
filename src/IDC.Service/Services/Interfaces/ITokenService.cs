@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace IDC.Api.Services
+namespace IDC.Application.Services.Interfaces
 {
     public interface ITokenService
     {

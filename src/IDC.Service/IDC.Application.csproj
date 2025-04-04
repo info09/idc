@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IDC.Domain\IDC.Domain.csproj" />
+    <ProjectReference Include="..\IDC.Shared\IDC.Shared.csproj" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

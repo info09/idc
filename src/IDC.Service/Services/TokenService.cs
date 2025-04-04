@@ -1,4 +1,5 @@
-﻿using IDC.Domain.ConfigOptions;
+﻿using IDC.Application.Services.Interfaces;
+using IDC.Domain.ConfigOptions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -6,7 +7,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace IDC.Api.Services;
+namespace IDC.Application.Services;
 
 public class TokenService : ITokenService
 {

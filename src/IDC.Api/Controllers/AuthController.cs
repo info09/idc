@@ -1,14 +1,6 @@
-﻿
-
-using IDC.Api.Services;
-using IDC.Application.Dto.Auth;
-using IDC.Domain.Data.Identity;
-using IDC.Shared.Constants;
-using Microsoft.AspNetCore.Identity;
+﻿using IDC.Application.Dto.Auth;
+using IDC.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace IDC.Api.Controllers
 {
@@ -16,54 +8,29 @@ namespace IDC.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly ITokenService _tokenService;
-        private readonly RoleManager<AppRole> _roleManager;
+        private readonly IAuthService _authService;
 
-        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService, RoleManager<AppRole> roleManager)
+        public AuthController(IAuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenService = tokenService;
-            _roleManager = roleManager;
+            _authService = authService;
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<ActionResult<AuthenticatedResult>> Login([FromBody] LoginRequest request)
         {
             if (request == null) return BadRequest("Invalid request");
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(i => i.UserName == request.UserName);
-            if (user == null || user.IsActive == false || user.LockoutEnabled) return BadRequest("Đăng nhập không đúng");
+            var result = await _authService.Login(request);
 
-            var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, true);
-            if (!result.Succeeded) return BadRequest("Đăng nhập không đúng");
+            return Ok(result);
+        }
 
-            var roles = await _userManager.GetRolesAsync(user);
-            //var permissions = await this.GetPermissionsByUserIdAsync(user.Id.ToString());
-            var claims = new[]
-            {
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                    new Claim(UserClaims.Id, user.Id.ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.UserName!),
-                    new Claim(ClaimTypes.Name, user.UserName!),
-                    new Claim(UserClaims.FirstName, user.FirstName),
-                    new Claim(UserClaims.Roles, string.Join(";", roles)),
-                    //new Claim(UserClaims.Permissions, JsonSerializer.Serialize(permissions)),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(UserClaims.Avatar, !string.IsNullOrEmpty(user?.Avatar) ? user.Avatar : "")
-            };
-
-            var accessToken = _tokenService.GenerateAccessToken(claims);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
-            user!.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
-
-            await _userManager.UpdateAsync(user);
-
-            return Ok(new AuthenticatedResult() { RefreshToken = refreshToken, Token = accessToken });
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<AuthenticatedResult>> RefreshToken([FromBody] TokenRequest request)
+        {
+            if (request == null) return BadRequest("Invalid request");
+            var result = await _authService.RefreshToken(request);
+            return Ok(result);
         }
     }
 }
