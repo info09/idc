@@ -1,4 +1,5 @@
-﻿using IDC.Domain.Data.Identity;
+﻿using IDC.Domain.Data.Company;
+using IDC.Domain.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace IDC.Infrastructure.Data;
@@ -47,6 +48,23 @@ public class DataSeeder
                 RoleId = adminRoleId,
                 UserId = userAdminId,
             });
+            await context.SaveChangesAsync();
+        }
+
+        if (!context.Companies.Any())
+        {
+            var companyId = Guid.NewGuid();
+            var company = new Company()
+            {
+                Id = companyId,
+                Name = "ICSP Việt Nam",
+                Address = "Ngõ 82 Duy Tân",
+                Email = "huytq@ics-p.vn",
+                CompanyType = CompanyType.Trial,
+                PhoneNumber = "0328478290",
+                DateCreated = DateTime.UtcNow
+            };
+            await context.Companies.AddAsync(company);
             await context.SaveChangesAsync();
         }
     }

@@ -23,7 +23,7 @@ public class AppUser : IdentityUser<Guid>
     public DateTime? VipStartDate { get; set; }
     public DateTime? VipExpireDate { get; set; }
     public DateTime? LastLoginDate { get; set; }
-
+    public Guid CompanyId { get; set; }
     public string GetFullName()
     {
         return this.FirstName + " " + this.LastName;

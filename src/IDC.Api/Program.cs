@@ -6,6 +6,7 @@ using IDC.Domain.ConfigOptions;
 using IDC.Domain.Data.Identity;
 using IDC.Domain.SeedWorks;
 using IDC.Infrastructure.Data;
+using IDC.Infrastructure.Repositories;
 using IDC.Infrastructure.SeedWorks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -77,6 +78,23 @@ try
     builder.Services.AddScoped<RoleManager<AppRole>, RoleManager<AppRole>>();
     builder.Services.AddScoped<ITokenService, TokenService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+
+    // Business services and repositories
+    var services = typeof(CompanyRepository).Assembly.GetTypes()
+        .Where(i => i.GetInterfaces().Any(i => i.Name == typeof(IRepositoryBase<,>).Name) &&
+                    !i.IsAbstract &&
+                    i.IsClass &&
+                    !i.IsGenericType);
+
+    foreach (var service in services)
+    {
+        var allInterfaces = service.GetInterfaces();
+        var directInterface = allInterfaces.Except(allInterfaces.SelectMany(i => i.GetInterfaces())).FirstOrDefault();
+        if (directInterface != null)
+        {
+            builder.Services.Add(new ServiceDescriptor(directInterface, service, ServiceLifetime.Scoped));
+        }
+    }
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

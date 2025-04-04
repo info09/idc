@@ -1,4 +1,5 @@
-﻿using IDC.Domain.Data.Identity;
+﻿using IDC.Domain.Data.Company;
+using IDC.Domain.Data.Identity;
 using IDC.Shared.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -11,6 +12,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public ApplicationDbContext(DbContextOptions options) : base(options)
     {
     }
+
+    public DbSet<Company> Companies { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
