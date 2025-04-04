@@ -15,10 +15,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
-
 Log.Information("Starting up the application...");
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,89 +24,22 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 try
 {
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowAll",
-            policy =>
-            {
-                policy.AllowAnyOrigin()
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
-            });
-    });
+    builder.Host.AddApplicationConfigurations();
+    builder.Host.ConfigureSerilog();
+    builder.Services.ConfigureCors();
 
     // Add services to the container.
 
     builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-    builder.Services.AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                    .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddDefaultTokenProviders();
+    builder.Services.ConfigureIdentityServer(configuration);
 
-    builder.Services.Configure<IdentityOptions>(options =>
-    {
-        // Password settings
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = true;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequiredLength = 6;
-        options.Password.RequiredUniqueChars = 1;
-
-        // Lockout settings.
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-        options.Lockout.MaxFailedAccessAttempts = 5;
-        options.Lockout.AllowedForNewUsers = false;
-
-        // User settings.
-        options.User.AllowedUserNameCharacters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-        options.User.RequireUniqueEmail = true;
-    });
-
-    builder.Services.AddScoped(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
-    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-    builder.Services.Configure<JwtTokenSettings>(configuration.GetSection("JwtTokenSettings"));
-    builder.Services.AddScoped<SignInManager<AppUser>, SignInManager<AppUser>>();
-    builder.Services.AddScoped<UserManager<AppUser>, UserManager<AppUser>>();
-    builder.Services.AddScoped<RoleManager<AppRole>, RoleManager<AppRole>>();
-    builder.Services.AddScoped<ITokenService, TokenService>();
-    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.ConfigureServices(configuration);
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(options =>
-    {
-        options.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-
-        // Cấu hình authentication
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Nhập token dạng: Bearer {your JWT token}"
-        });
-
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-    });
+    builder.Services.ConfigureSwagger();
 
     builder.Services.AddAuthentication(o =>
     {
