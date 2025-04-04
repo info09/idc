@@ -1,3 +1,4 @@
+using IDC.Api;
 using IDC.Api.Extensions;
 using IDC.Api.Services;
 using IDC.Domain.ConfigOptions;
@@ -104,5 +105,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MigrateDatabase();
 
 app.Run();
