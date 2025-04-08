@@ -1,7 +1,9 @@
 ﻿using IDC.Application.Dto.Auth;
 using IDC.Application.Services.Interfaces;
 using IDC.Domain.Data.Identity;
+using IDC.Domain.Exceptions;
 using IDC.Shared.Constants;
+using IDC.Shared.SeedWorks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,13 +26,16 @@ namespace IDC.Application.Services
             _roleManager = roleManager;
         }
 
-        public async Task<AuthenticatedResult> Login(LoginRequest request)
+        public async Task<ApiResult<AuthenticatedResult>> Login(LoginRequest request)
         {
+            if(request == null)
+                return new ApiErrorResult<AuthenticatedResult>(500, "Invalid Request");
+
             var user = await _userManager.Users.FirstOrDefaultAsync(i => i.UserName == request.UserName);
-            if (user == null || user.IsActive == false || user.LockoutEnabled) throw new Exception("Đăng nhập không đúng");
+            if (user == null || user.IsActive == false || user.LockoutEnabled) throw new IDCException("Đăng nhập không đúng");
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, true);
-            if (!result.Succeeded) throw new Exception("Đăng nhập không đúng");
+            if (!result.Succeeded) throw new IDCException("Đăng nhập không đúng");
 
             var roles = await _userManager.GetRolesAsync(user);
             //var permissions = await this.GetPermissionsByUserIdAsync(user.Id.ToString());
@@ -55,26 +60,33 @@ namespace IDC.Application.Services
 
             await _userManager.UpdateAsync(user);
 
-            return new AuthenticatedResult() { Token = accessToken, RefreshToken = refreshToken };
+            return new ApiSuccessResult<AuthenticatedResult>(200, new AuthenticatedResult()
+            {
+                Token = accessToken,
+                RefreshToken = refreshToken
+            });
         }
 
-        public async Task<AuthenticatedResult> RefreshToken(TokenRequest request)
+        public async Task<ApiResult<AuthenticatedResult>> RefreshToken(TokenRequest request)
         {
+            if (request == null) 
+                throw new IDCException("Invalid request");
+
             var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
 
             if (principal == null || principal.Identity == null || principal.Identity.Name == null)
-                throw new Exception("Invalid token");
+                throw new IDCException("Invalid token");
 
             var user = await _userManager.Users.FirstOrDefaultAsync(i => i.UserName == principal.Identity.Name);
 
             if (request.RefreshToken != user?.RefreshToken)
-                throw new Exception("Invalid token");
+                throw new IDCException("Invalid token");
 
             if (user.RefreshTokenExpiryTime < DateTime.UtcNow)
-                throw new Exception("Invalid token");
+                throw new IDCException("Invalid token");
 
             if (user == null || user.IsActive == false || user.LockoutEnabled)
-                throw new Exception("Invalid token");
+                throw new IDCException("Invalid token");
 
             var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
@@ -83,11 +95,11 @@ namespace IDC.Application.Services
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30);
 
             await _userManager.UpdateAsync(user);
-            return new AuthenticatedResult()
+            return new ApiSuccessResult<AuthenticatedResult>(200, new AuthenticatedResult()
             {
                 Token = newAccessToken,
                 RefreshToken = newRefreshToken
-            };
+            });
         }
     }
 }

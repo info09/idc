@@ -36,7 +36,7 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, Guid>
             if (entityEntry.State == EntityState.Added
                 && dateCreatedProp != null)
             {
-                dateCreatedProp.SetValue(entityEntry.Entity, DateTime.Now);
+                dateCreatedProp.SetValue(entityEntry.Entity, DateTime.UtcNow);
             }
         }
         return base.SaveChangesAsync(cancellationToken);

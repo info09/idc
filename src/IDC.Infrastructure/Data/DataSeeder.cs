@@ -34,7 +34,7 @@ public class DataSeeder
                 LastName = "Admin",
                 Email = "admin@gmail.com",
                 NormalizedEmail = "ADMIN@GMAIL.COM",
-                UserName = "admin",
+                UserName = "sysadmin",
                 IsActive = true,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 LockoutEnabled = false,
@@ -51,21 +51,21 @@ public class DataSeeder
             await context.SaveChangesAsync();
         }
 
-        if (!context.Companies.Any())
-        {
-            var companyId = Guid.NewGuid();
-            var company = new Company()
-            {
-                Id = companyId,
-                Name = "ICSP Việt Nam",
-                Address = "Ngõ 82 Duy Tân",
-                Email = "huytq@ics-p.vn",
-                CompanyType = CompanyType.Trial,
-                PhoneNumber = "0328478290",
-                DateCreated = DateTime.UtcNow
-            };
-            await context.Companies.AddAsync(company);
-            await context.SaveChangesAsync();
-        }
+        //if (!context.Companies.Any())
+        //{
+        //    var companyId = Guid.NewGuid();
+        //    var company = new Company()
+        //    {
+        //        Id = companyId,
+        //        Name = "ICSP Việt Nam",
+        //        Address = "Ngõ 82 Duy Tân",
+        //        Email = "huytq@ics-p.vn",
+        //        CompanyType = CompanyType.Trial,
+        //        PhoneNumber = "0328478290",
+        //        DateCreated = DateTime.UtcNow
+        //    };
+        //    await context.Companies.AddAsync(company);
+        //    await context.SaveChangesAsync();
+        //}
     }
 }

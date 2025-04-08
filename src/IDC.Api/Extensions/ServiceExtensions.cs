@@ -88,6 +88,7 @@ public static class ServiceExtensions
         
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICompanyService, CompanyService>();
     }
 
     public static void ConfigureSwagger(this IServiceCollection services)
