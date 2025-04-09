@@ -58,4 +58,18 @@ public class CompanyService : ICompanyService
 
         return new ApiSuccessResult<bool>(200, true);
     }
+
+    public async Task<ApiResult<List<CompanyDto>>> GetCompanys()
+    {
+        var companys = await _unitOfWork.CompanyRepository.GetAllAsync();
+        var companyDto = companys.Select(c => new CompanyDto()
+        {
+            Name = c.Name,
+            Email = c.Email,
+            PhoneNumber = c.PhoneNumber,
+            Address = c.Address,
+            CompanyType = c.CompanyType,
+        }).ToList();
+        return new ApiSuccessResult<List<CompanyDto>>(200, companyDto);
+    }
 }
