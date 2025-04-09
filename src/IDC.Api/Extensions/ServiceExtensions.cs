@@ -8,6 +8,8 @@ using IDC.Infrastructure.SeedWorks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using IDC.Shared.Configurations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace IDC.Api.Extensions;
 
@@ -91,37 +93,64 @@ public static class ServiceExtensions
         services.AddScoped<ICompanyService, CompanyService>();
     }
 
+    public static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        var apiConfiguration = configuration.GetSection(nameof(ApiConfiguration)).Get<ApiConfiguration>();
+        services.AddSingleton(apiConfiguration);
+
+        return services;
+    }
+
     public static void ConfigureSwagger(this IServiceCollection services)
     {
-        services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
+        var configuration = services.GetOptions<ApiConfiguration>("ApiConfiguration");
+        if (configuration == null || string.IsNullOrEmpty(configuration.IssuerUri) ||
+            string.IsNullOrEmpty(configuration.ApiName)) throw new Exception("ApiConfiguration is not configured!");
 
-            // Cấu hình authentication
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Nhập token dạng: Bearer {your JWT token}"
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+        services.AddSwaggerGen(c =>
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
+            c.SwaggerDoc("v1",
+                new OpenApiInfo
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    Title = "IDC API V1",
+                    Version = configuration.ApiVersion
+                });
+
+            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.OAuth2,
+                Flows = new OpenApiOAuthFlows
+                {
+                    Implicit = new OpenApiOAuthFlow
+                    {
+                        AuthorizationUrl = new Uri($"{configuration.IdentityServerBaseUrl}/connect/authorize"),
+                        Scopes = new Dictionary<string, string>
+                        {
+                            { "IDP_api.read", "Read Access to IDC API" },
+                            { "IDP_api.write", "Write Access to IDC API" }
+                        }
+                    }
                 }
-            },
-            Array.Empty<string>()
-        }
-    });
+            });
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        },
+                        Name = JwtBearerDefaults.AuthenticationScheme
+                    },
+                    new List<string>
+                    {
+                        "IDP_api.read",
+                        "IDP_api.write"
+                    }
+                }
+            });
         });
     }
 }

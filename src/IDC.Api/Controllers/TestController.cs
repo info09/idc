@@ -5,7 +5,7 @@ namespace IDC.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize("Bearer")]
     public class TestController : ControllerBase
     {
         [HttpGet]

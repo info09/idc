@@ -9,6 +9,7 @@ using IDC.Infrastructure.Data;
 using IDC.Infrastructure.Repositories;
 using IDC.Infrastructure.SeedWorks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -35,6 +36,8 @@ try
 
     builder.Services.ConfigureIdentityServer(configuration);
 
+    builder.Services.AddConfigurationSettings(configuration);
+
     builder.Services.ConfigureServices(configuration);
 
     // Business services and repositories
@@ -59,24 +62,27 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.ConfigureSwagger();
 
-    builder.Services.AddAuthentication(o =>
-    {
-        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer(cfg =>
-    {
-        cfg.RequireHttpsMetadata = false;
-        cfg.SaveToken = true;
+    //builder.Services.AddAuthentication(o =>
+    //{
+    //    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    //    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    //}).AddJwtBearer(cfg =>
+    //{
+    //    cfg.RequireHttpsMetadata = false;
+    //    cfg.SaveToken = true;
 
-        cfg.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(0),
-            ValidIssuer = configuration["JwtTokenSettings:Issuer"],
-            ValidAudience = configuration["JwtTokenSettings:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtTokenSettings:Key"]!))
-        };
-    });
+    //    cfg.TokenValidationParameters = new TokenValidationParameters
+    //    {
+    //        ValidateLifetime = true,
+    //        ClockSkew = TimeSpan.FromSeconds(0),
+    //        ValidIssuer = configuration["JwtTokenSettings:Issuer"],
+    //        ValidAudience = configuration["JwtTokenSettings:Issuer"],
+    //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtTokenSettings:Key"]!))
+    //    };
+    //});
+
+    builder.Services.ConfigureAuthenticationHandler();
+    builder.Services.ConfigureAuthorization();
 
     var app = builder.Build();
 
@@ -84,7 +90,12 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(c =>
+        {
+            c.OAuthClientId("idp_swagger");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "IDC API V1");
+            c.DisplayRequestDuration();
+        });
     }
 
     app.UseErrorWrapping();

@@ -26,6 +26,7 @@ public class ErrorWrappingMiddleware
             _logger.LogError(ex, ex.Message);
             errorMsg = ex.Message;
             context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json"; // Set content type to JSON
             var resp = new ApiErrorResult<bool>(500, errorMsg);
             var json = JsonSerializer.Serialize(resp);
             await context.Response.WriteAsync(json);
