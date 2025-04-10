@@ -4,6 +4,15 @@ services:
   #database section
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "123456aA@"
+      ACCEPT_EULA: "Y"
+    restart: always
+    volumes:
+      - sqlserver_data:/var/lib/sqlserver/data
+    ports:
+      - "1433:1433"
 
   # tedu.api:
   #   image: ${DOCKER_REGISTRY-}tedu-api:${PLATFORM:-linux}-${TAG:-latest}
@@ -14,7 +23,7 @@ services:
 #network section
 networks:
   default:
-    name: idc
+    name: idc_network
     driver: bridge
 
 #volumes sections
