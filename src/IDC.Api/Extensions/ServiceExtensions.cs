@@ -96,7 +96,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
     {
         var apiConfiguration = configuration.GetSection(nameof(ApiConfiguration)).Get<ApiConfiguration>();
-        services.AddSingleton(apiConfiguration);
+        services.AddSingleton(apiConfiguration!);
 
         return services;
     }

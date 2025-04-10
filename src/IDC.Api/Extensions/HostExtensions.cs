@@ -4,15 +4,14 @@ namespace IDC.Api.Extensions;
 
 public static class HostExtensions
 {
-    public static void AddApplicationConfigurations(this ConfigureHostBuilder host)
+    public static void AddApplicationConfigurations(this WebApplicationBuilder builder)
     {
-        host.ConfigureAppConfiguration((context, config) =>
-        {
-            var env = context.HostingEnvironment;
-            config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-        });
+        var env = builder.Environment;
+
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
 
     }
 }

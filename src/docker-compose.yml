@@ -14,11 +14,23 @@ services:
     ports:
       - "1433:1433"
 
-  # tedu.api:
-  #   image: ${DOCKER_REGISTRY-}tedu-api:${PLATFORM:-linux}-${TAG:-latest}
-  #   build:
-  #    context: .
-  #    dockerfile: src/TeduBlog.Api/Dockerfile
+  idc.api:
+    image: ${DOCKER_REGISTRY-}idc.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+     context: .
+     dockerfile: IDC.Api/Dockerfile
+    container_name: idc.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - "ConnectionStrings:DefaultConnection=Server=sqlserver;Database=IDC;User Id=sa;Password=123456aA@;Multipleactiveresultsets=true;TrustServerCertificate=True;"
+      - "ApiConfiguration:IdentityServerBaseUrl=http://localhost:6001"
+      - "ApiConfiguration:IssuerUri=http://idp.api"
+    depends_on:
+      - sqlserver
+    ports:
+      - '6002:80'
+    restart: always
 
 #network section
 networks:

@@ -26,7 +26,7 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 try
 {
-    builder.Host.AddApplicationConfigurations();
+    builder.AddApplicationConfigurations();
     builder.Host.ConfigureSerilog();
     builder.Services.ConfigureCors();
 

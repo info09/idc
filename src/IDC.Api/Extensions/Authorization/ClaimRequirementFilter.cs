@@ -26,7 +26,7 @@ public class ClaimRequirementFilter : IAuthorizationFilter
         else
         {
             var permissions = JsonSerializer.Deserialize<List<string>>(permissionClaims.Value);
-            if (!permissions.Contains(PermissionHelper.GetPermission(_functionCode, _commandCode)))
+            if (!permissions!.Contains(PermissionHelper.GetPermission(_functionCode, _commandCode)))
             {
                 context.Result = new ForbidResult();
             }
