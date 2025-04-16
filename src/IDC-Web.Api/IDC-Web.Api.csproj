@@ -19,10 +19,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\IDC.Application\IDC.Application.csproj" />
-		<ProjectReference Include="..\IDC.Domain\IDC.Domain.csproj" />
-		<ProjectReference Include="..\IDC.Infrastructure\IDC.Infrastructure.csproj" />
-		<ProjectReference Include="..\IDC.Shared\IDC.Shared.csproj" />
+		<ProjectReference Include="..\IDC-Web.Application\IDC-Web.Application.csproj" />
+		<ProjectReference Include="..\IDC-Web.Infrastructure\IDC-Web.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>
