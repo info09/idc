@@ -103,54 +103,86 @@ public static class ServiceExtensions
 
     public static void ConfigureSwagger(this IServiceCollection services)
     {
-        var configuration = services.GetOptions<ApiConfiguration>("ApiConfiguration");
-        if (configuration == null || string.IsNullOrEmpty(configuration.IssuerUri) ||
-            string.IsNullOrEmpty(configuration.ApiName)) throw new Exception("ApiConfiguration is not configured!");
-
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1",
-                new OpenApiInfo
-                {
-                    Title = "IDC API V1",
-                    Version = configuration.ApiVersion
-                });
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "GSSP Loyalty API",
+                Version = "v1",
+                Description = "API for Loyalty App"
+            });
 
-            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            // Nếu cần dùng xác thực bearer token:
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
-                {
-                    Implicit = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri($"{configuration.IdentityServerBaseUrl}/connect/authorize"),
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "IDP_api.read", "Read Access to IDC API" },
-                            { "IDP_api.write", "Write Access to IDC API" }
-                        }
-                    }
-                }
+                In = ParameterLocation.Header,
+                Description = "Nhập token dạng: Bearer {your token}",
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
             });
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
+
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement {
                     {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = JwtBearerDefaults.AuthenticationScheme
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
                         },
-                        Name = JwtBearerDefaults.AuthenticationScheme
-                    },
-                    new List<string>
-                    {
-                        "IDP_api.read",
-                        "IDP_api.write"
+                        new string[] {}
                     }
-                }
-            });
+                });
         });
+
+        //var configuration = services.GetOptions<ApiConfiguration>("ApiConfiguration");
+        //if (configuration == null || string.IsNullOrEmpty(configuration.IssuerUri) ||
+        //    string.IsNullOrEmpty(configuration.ApiName)) throw new Exception("ApiConfiguration is not configured!");
+
+        //services.AddSwaggerGen(c =>
+        //{
+        //    c.SwaggerDoc("v1",
+        //        new OpenApiInfo
+        //        {
+        //            Title = "IDC API V1",
+        //            Version = configuration.ApiVersion
+        //        });
+
+        //    c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+        //    {
+        //        Type = SecuritySchemeType.OAuth2,
+        //        Flows = new OpenApiOAuthFlows
+        //        {
+        //            Implicit = new OpenApiOAuthFlow
+        //            {
+        //                AuthorizationUrl = new Uri($"{configuration.IdentityServerBaseUrl}/connect/authorize"),
+        //                Scopes = new Dictionary<string, string>
+        //                {
+        //                    { "IDP_api.read", "Read Access to IDC API" },
+        //                    { "IDP_api.write", "Write Access to IDC API" }
+        //                }
+        //            }
+        //        }
+        //    });
+        //    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        //    {
+        //        {
+        //            new OpenApiSecurityScheme
+        //            {
+        //                Reference = new OpenApiReference
+        //                {
+        //                    Type = ReferenceType.SecurityScheme,
+        //                    Id = JwtBearerDefaults.AuthenticationScheme
+        //                },
+        //                Name = JwtBearerDefaults.AuthenticationScheme
+        //            },
+        //            new List<string>
+        //            {
+        //                "IDP_api.read",
+        //                "IDP_api.write"
+        //            }
+        //        }
+        //    });
+        //});
     }
 }

@@ -62,27 +62,27 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.ConfigureSwagger();
 
-    //builder.Services.AddAuthentication(o =>
-    //{
-    //    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    //    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    //}).AddJwtBearer(cfg =>
-    //{
-    //    cfg.RequireHttpsMetadata = false;
-    //    cfg.SaveToken = true;
+    builder.Services.AddAuthentication(o =>
+    {
+        o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(cfg =>
+    {
+        cfg.RequireHttpsMetadata = false;
+        cfg.SaveToken = true;
 
-    //    cfg.TokenValidationParameters = new TokenValidationParameters
-    //    {
-    //        ValidateLifetime = true,
-    //        ClockSkew = TimeSpan.FromSeconds(0),
-    //        ValidIssuer = configuration["JwtTokenSettings:Issuer"],
-    //        ValidAudience = configuration["JwtTokenSettings:Issuer"],
-    //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtTokenSettings:Key"]!))
-    //    };
-    //});
+        cfg.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(0),
+            ValidIssuer = configuration["JwtTokenSettings:Issuer"],
+            ValidAudience = configuration["JwtTokenSettings:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtTokenSettings:Key"]!))
+        };
+    });
 
-    builder.Services.ConfigureAuthenticationHandler();
-    builder.Services.ConfigureAuthorization();
+    //builder.Services.ConfigureAuthenticationHandler();
+    //builder.Services.ConfigureAuthorization();
 
     var app = builder.Build();
 

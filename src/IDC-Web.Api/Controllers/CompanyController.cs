@@ -20,7 +20,7 @@ namespace IDC.Api.Controllers
             _companyService = companyService;
         }
 
-        [HttpGet]
+        [HttpGet] 
         [ClaimRequirement(FunctionCode.COMPANY, CommandCode.VIEW)]
         public async Task<IActionResult> GetCompany()
         {
@@ -42,7 +42,7 @@ namespace IDC.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+                return BadRequest(new ApiErrorResult<bool>(500, $"Internal server error: {ex.Message}"));
             }
         }
     }
